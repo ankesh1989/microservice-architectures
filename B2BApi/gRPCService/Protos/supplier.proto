@@ -1,0 +1,63 @@
+syntax = "proto3";
+
+option csharp_namespace = "gRPCService.Protos";
+
+service Supplier{
+	rpc GetAllSuppliers(PagingDTO) returns (PagedList<GetSupplierDto>);
+	rpc GetSupplierById(SupplierRequest) returns (GetSupplierDto);
+}
+message SupplierRequest {
+	int32 supplierId = 1;	
+}
+
+message PagingDTO {
+	int32 PageNo = 1;
+    int32 PageSize = 2;
+    string OrderBy = 3;
+    string OrderType = 4;
+    string ColumnName = 5;
+    string OperationName = 6;
+    string SearchText = 7;
+}
+message GetSupplierDto {
+	int32 Id = 1;
+    string Code = 2;
+    string Name = 3;
+    int32 CountryId = 4;
+    string CountryName = 5;
+    int32 StateId = 6;
+    string StateName = 7;
+    int32 CityId = 8;
+    string CityName = 9;
+    int32 ProductId = 10;
+    string LedgerCode = 11;
+    string Type = 12;
+    string Flex1 = 13;
+    int32 CurrencyId = 14;
+    string EndPoint1 = 15;
+    string EndPoint2 = 16;
+    string EndPoint3 = 17;
+    string EndPoint4 = 18;
+    string EndPoint5 = 19;
+    string EndPoint6 = 20;
+    string EndPoint7 = 21;
+    string Credentials1 = 22;
+    string Credentials2 = 23;
+    string Credentials3 = 24;
+    string Credentials4 = 25;
+    string Credentials5 = 26;
+    string Credentials6 = 27;
+    string Credentials7 = 28;
+    string Credentials8 = 29;
+    string Credentials9 = 30;
+    string Category = 31;
+    string Mode = 32;
+    string TechEmail = 33;
+    string TechContact = 34;
+    string SupplierAm = 35;
+    string SupplierAmContact = 36;
+    string ApiLastModified = 37;
+    string Remarks = 38;
+    string CreatedOn = 39;
+    string ModifiedOn = 40;
+}

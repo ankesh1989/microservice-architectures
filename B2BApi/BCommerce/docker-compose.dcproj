@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" Sdk="Microsoft.Docker.Sdk">
+  <PropertyGroup Label="Globals">
+    <ProjectVersion>2.1</ProjectVersion>
+    <DockerTargetOS>Linux</DockerTargetOS>
+    <ProjectGuid>665494c5-3135-45c1-915c-b17235d185e9</ProjectGuid>
+    <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
+    <DockerServiceName>bcommerce.httpaggregator</DockerServiceName>
+    <DockerServiceName>bcommerce.commonservice.api</DockerServiceName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="k8s\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="components\config.yaml" />
+    <None Include="components\dapr.yaml" />
+    <None Include="components\dashboard.yaml" />
+    <None Include="components\pubsub.yaml" />
+    <None Include="components\secrets.json" />
+    <None Include="components\secretstore.yaml" />
+    <None Include="components\statestore.yaml" />
+    <None Include="components\subscription.yaml" />
+    <None Include="docker-compose.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose.yml" />
+    <None Include=".dockerignore" />
+    <None Include="grafana\provisioning\dashboards\dashboard.yml" />
+    <None Include="grafana\provisioning\dashboards\GrafanaPromAPIDashboard.json" />
+    <None Include="grafana\provisioning\datasources\loki_ds.yml" />
+    <None Include="grafana\provisioning\datasources\prometheus_ds.yml" />
+    <None Include="loki\loki-config.yml" />
+    <None Include="prometheus\prometheus.yml" />
+    <None Include="promtail\promtail-config.yml" />
+  </ItemGroup>
+</Project>
