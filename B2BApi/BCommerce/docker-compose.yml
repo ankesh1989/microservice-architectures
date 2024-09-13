@@ -1,0 +1,261 @@
+version: '3.4'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  redis:
+    image: redis:alpine
+
+  postgres:
+    image: postgres:latest
+
+  dapr_zipkin:
+    image: openzipkin/zipkin-slim:latest
+    networks:
+      - dapr_network
+
+  dapr_placement:
+    image: "daprio/dapr:1.9.4"
+    networks:
+      - dapr_network
+
+  # dapr_init:
+  #     image: "daprio/dapr"
+  #     command: ["./daprd", "--app-id", "dapr-client", "--app-port", "8080"]
+  #     ports:
+  #       - "8081:8081" # Map port 8081 of the host to port 8081 of the container
+  #     depends_on:
+  #       - dapr_placement
+  #       - dapr_zipkin
+  #     networks:
+  #       - dapr_network
+
+  # dapr_dashboard:
+  #     image: "daprio/dapr"
+  #     command: ["./daprd", "--app-id", "dapr-client", "dashboard"]
+  #     ports:
+  #       - "8090:8080" # Map port 8090 of the host to port 8080 of the container
+  #     depends_on:
+  #       - dapr_init
+  #     networks:
+  #       - dapr_network
+
+  dapr_dashboard:
+    image: daprio/dashboard
+    depends_on:
+      - redis
+      - dapr_placement
+    networks:
+      - dapr_network
+
+  bcommerce.httpaggregator:
+    image: bcommerce.httpaggregator:latest
+    build:
+      context: .
+      dockerfile: ./src/ApiGateways/Aggregators/BCommerce.HttpAggregator/Dockerfile
+    depends_on:
+      - bcommerce.commonservice.api
+      - bcommerce.masterservice.api
+      - bcommerce.airlineservice.api
+
+  bcommerce.dapr.api:
+    image: bcommerce.dapr.api:latest
+    build:
+      context: .
+      dockerfile: ./src/Dapr/BCommerce.Dapr.API/Dockerfile
+      # dockerfile: ./src/ApiGateways/Envoy/Dockerfile
+    networks:
+      - dapr_network
+ 
+  bcommerce-dapr-api-dapr:
+    image: "daprio/daprd:1.9.4"
+    network_mode: "service:bcommerce.dapr.api"
+    # command: [
+    #   "./daprd",
+    #   # "run",
+    #   "--app-id", "dapr-client",
+    #   "--app-port", "5001",
+    #   "--dapr-http-port", "50001",
+    #   "--resources-path", "./components"
+    #  ]
+    # volumes:
+    #     - "./components/:/components"
+    depends_on:
+      - bcommerce.dapr.api
+
+  bcommerce.commonservice.api:
+    image: bcommerce.commonservice.api:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/BCommerce.CommonServices/BCommerce.CommonService.API/Dockerfile
+    depends_on:
+        postgres:
+            condition: service_started
+        dapr_zipkin:
+            condition: service_started
+        dapr_placement:
+            condition: service_started
+        prometheus:
+            condition: service_healthy
+        grafana:
+            condition: service_healthy
+        loki:
+            condition: service_healthy
+    networks:
+      - dapr_network
+
+  bcommerce-commonservice-api-dapr:
+    image: "daprio/daprd:1.9.4"
+    network_mode: "service:bcommerce.commonservice.api"
+    depends_on:
+      - bcommerce.commonservice.api
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus_grafprom
+    restart: always
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:9090/
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+    networks:
+      - loki
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: always
+    ports:
+      - 3100:3100
+    volumes:
+      - ./loki:/etc/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:3100/ready
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:latest
+    restart: always
+    volumes:
+      - /var/log:/var/log
+      - ./promtail:/etc/promtail
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana:master
+    container_name: grafana_grafprom
+    restart: always
+    ports:
+      - 3000:3000
+    volumes:
+        - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+        - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+        prometheus:
+            condition: service_healthy
+        loki:
+            condition: service_healthy
+    healthcheck:
+        test: wget -q --tries=1 -O- http://localhost:3000/
+        interval: 3s
+        timeout: 3s
+        retries: 10
+        start_period: 10s
+    networks:
+        - loki
+
+  bcommerce.masterservice.api:
+    image: bcommerce.masterservice.api:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/BCommerce.MasterServices/BCommerce.MasterService.API/Dockerfile
+    depends_on:
+        - redis
+        - dapr_zipkin
+        - dapr_placement
+        - postgres
+    networks:
+      - dapr_network
+     
+  bcommerce-masterservice-api-dapr:
+    image: "daprio/daprd:1.9.4"
+    network_mode: "service:bcommerce.masterservice.api"
+    depends_on:
+      - bcommerce.masterservice.api
+
+  bcommerce.airlineservice.api:
+    image: bcommerce.airlineservice.api:latest
+    build:
+      context: .
+      dockerfile: ./src/Services/BCommerce.OrchestrationServices/AirlineService/BCommerce.AirlineService.API/Dockerfile
+    depends_on:
+        - redis
+        - dapr_zipkin
+        - dapr_placement
+        - postgres
+        - bcommerce.masterservice.api
+        - bcommerce.commonservice.api
+    networks:
+      - dapr_network
+     
+  bcommerce-airlineservice-api-dapr:
+    image: "daprio/daprd:1.9.4"
+    network_mode: "service:bcommerce.airlineservice.api"
+    depends_on:
+      - bcommerce.airlineservice.api
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    restart: always
+    ports:
+      - 8080:8080
+    command: start
+    environment:
+      - KC_HOSTNAME_STRICT=false
+      - KC_HOSTNAME_STRICT_HTTPS=false
+      - KC_HOSTNAME=localhost:8080
+      - KC_HTTP_ENABLED=true
+      - PROXY_ADDRESS_FORWARDING=true
+      - KC_PROXY=edge
+      - KC_LOG_LEVEL=info
+      - KC_LOG=console
+      - DB=keycloak
+      - DB_URL="Server=localhost;Port=5432;Database=KeyCloakDB;User Id=postgres;Password=root;"
+      # - DB_USERNAME=postgres
+      # - DB_PASSWORD=root
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+    networks:
+      keycloak:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keycloak.entrypoints=http"
+      # - "traefik.http.routers.keycloak.rule=Host(`keycloak.yourdomain.com`)"
+      - "traefik.http.middlewares.keycloak-https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.keycloak.middlewares=keycloak-https-redirect"
+      - "traefik.http.routers.keycloak-secure.entrypoints=https"
+      # - "traefik.http.routers.keycloak-secure.rule=Host(`keycloak.yourdomain.com`)"
+      - "traefik.http.routers.keycloak-secure.tls=true"
+      - "traefik.http.routers.keycloak-secure.service=keycloak"
+      - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+
+networks:
+  dapr_network:
+    driver: bridge
+  loki:
+  keycloak:

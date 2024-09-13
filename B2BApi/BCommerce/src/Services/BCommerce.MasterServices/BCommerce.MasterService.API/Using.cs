@@ -1,0 +1,16 @@
+﻿global using BCommerce.CommonEntities.Shared.Infrastructure.Context;
+global using BCommerce.CommonEntities.Shared.Infrastructure.Entities;
+global using BCommerce.MasterService.API.Command.Create;
+global using BCommerce.MasterService.API.Command.Delete;
+global using BCommerce.MasterService.API.Command.Edit;
+global using MediatR;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using EventBus.Events;
+global using EventBus.Abstractions;
+global using BCommerce.MasterService.API.DTOs.Supplier;
+global using BCommerce.MasterService.API.IntegrationEvents.Events;
+global using BCommerce.MasterService.API.IntegrationEvents.EventHandling;
+global using Dapr.Client;
+global using RabbitMQ.Client;
+global using RabbitMQ.Client.Events;
