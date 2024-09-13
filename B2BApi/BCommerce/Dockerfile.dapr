@@ -1,0 +1,19 @@
+# Use Ubuntu as the base image
+FROM ubuntu:latest
+
+
+# Install necessary dependencies
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    curl -fsSL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | /bin/bash && \
+    apt install -y wget && \
+    curl -L -o dapr-dashboard.zip https://github.com/dapr/dashboard/releases/download/v0.14.0/dashboard_linux_arm64.zip && \
+    unzip dapr-dashboard.zip -d dapr-dashboard && \
+    mv dapr-dashboard/dapr-dashboard /usr/local/bin/ && \
+    rm -rf dapr-dashboard dapr-dashboard.zip
+
+# Expose the Dapr Dashboard port
+EXPOSE 8080
+
+# Command to start Dapr Dashboard
+CMD ["dapr", "dashboard", "--app-port", "8080"]

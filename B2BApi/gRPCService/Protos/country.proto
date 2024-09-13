@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "gRPCService.Protos";
+
+service Country{
+	rpc GetAllCountries(PagingDTO) returns (PagedList<GetCountriesDto>);
+	rpc GetCountryById(GetCountryByIdRequest) returns (GetCountriesDto);
+	rpc InsertCountry(CreateCountryDto) returns (string);
+	rpc UpdateCountry(EditCountyDto) returns (string);
+	rpc RemoveCountry(RemoveCountryRequest) returns (string);
+}
+
+message GetCountryByIdRequest {
+	int32 countryId = 1;	
+}
+message RemoveCountryRequest{
+	int32 id = 1;
+}
