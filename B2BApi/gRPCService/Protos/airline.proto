@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option csharp_namespace = "gRPCService.Protos";
+
+service Airline{
+	rpc GetAllAirlines(PagingDTO) returns (PagedList<GetAirlineDto>);
+	rpc GetAirlineById(int) returns (GetAirlineDto);
+}
+message PagingDTO{
+
+}
+message GetAirlineDto{
+
+}

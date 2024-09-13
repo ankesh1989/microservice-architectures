@@ -1,0 +1,11 @@
+version: 1
+common:
+  resourcesPath: /components/
+apps:
+  - appID: common-service
+    appDirPath: ./src/Services/BCommerce.CommonServices/BCommerce.CommonService.API/Dockerfile
+    appPort: 5002
+    command: ["dotnet", "run"]
+  # - appID: checkout-sdk
+  #   appDirPath: ./checkout/
+  #   command: ["dotnet", "run"]

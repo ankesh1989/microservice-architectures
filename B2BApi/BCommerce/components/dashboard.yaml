@@ -1,0 +1,20 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: dashboard
+spec:
+  httpPipeline:
+    handlers:
+    - name: cors
+      type: middleware.http.cors
+      version: v1
+    - name: pipeline
+      type: middleware.http.pipeline
+      version: v1
+      metadata:
+      - name: handlers
+        value: ["cors"]
+  metrics:
+    enabled: true
+  tracing:
+    enabled: true

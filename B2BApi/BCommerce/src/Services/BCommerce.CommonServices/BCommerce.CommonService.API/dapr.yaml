@@ -1,0 +1,28 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: "bcommerce-common-api-config"
+spec:
+  appId: "bcommerce.commonservice.api"  # Replace with your desired App ID
+  httpPort: 3500
+  grpcPort: 50001
+  profiles:
+    - name: "http"
+      httpPipeline:
+        handlers:
+          - name: "cors"
+            type: "middleware.http.cors"
+            version: "v1"
+            settings:
+              allowedOrigins: ["*"]
+              allowedMethods: ["GET", "POST", "PUT", "DELETE"]
+              allowedHeaders: ["*"]
+    - name: "grpc"
+      grpcPipeline:
+        handlers:
+          - name: "log"
+            type: "middleware.grpc.log"
+            version: "v1"
+          - name: "metrics"
+            type: "middleware.grpc.metrics"
+            version: "v1"
