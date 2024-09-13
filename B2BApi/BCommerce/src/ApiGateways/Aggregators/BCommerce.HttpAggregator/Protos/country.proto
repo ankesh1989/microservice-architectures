@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+option csharp_namespace = "BCommerce.HttpAggregator.Protos";
+
+service Country{
+    rpc GetAllCountries(ProtoCountryPagingDTO) returns (PagedCountryDTO);
+	rpc GetCountryById(CountryRequest) returns (CountryDto);
+    rpc InsertCountry(ProtoCreateCountryDto) returns (StringData);
+    rpc UpdateCountry(ProtoEditCountyDto) returns (StringData);
+    rpc RemoveCountry(RemoveCountryId) returns (StringData);
+}
+
+message CountryRequest {
+	int32 countryId = 1;	
+}
+message StringData{
+    string data = 1;
+}
+
+message CountryDto{
+	int32 Id = 1;
+    string Code = 2;
+    string Name = 3;
+    int32 MarketId = 4;
+    optional string MarketName = 5;
+    string Nationality = 6;
+    string NationalityAR =7;
+   // google.protobuf.Timestamp CreatedOn = 8;
+}
+
+message ProtoCountryPagingDTO{
+    int32 PageNo = 1;
+    int32 PageSize = 2;
+    string OrderBy = 3;
+    string OrderType = 4;
+    string ColumnName = 5;  
+    string OperationName = 6;
+    string SearchText = 7;
+}
+
+message PagedCountryDTO{
+    int32 TotalRecords = 1;
+    optional int32 Page = 2;
+    optional int32 PageSize = 3;
+    optional int32 TotalPages = 4;
+    optional bool HasPrevious = 5;
+    optional bool HasNext = 6;
+    repeated CountryDto Items = 7;
+}
+
+message ProtoCreateCountryDto {
+    string Code = 1;
+    string Name = 2;
+    int32 MarketId = 3;
+    string Nationality = 4;
+    string NationalityAR =5;
+}
+
+message ProtoEditCountyDto{
+    int32 Id = 1;
+    string Code = 2;
+    string Name = 3;
+    int32 MarketId = 4;
+    string Nationality = 5;
+    string NationalityAR =6;
+}
+
+message RemoveCountryId {
+	int32 id = 1;	
+}

@@ -1,0 +1,64 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "bcommerce.httpaggregator": "StartDebugging",
+        "bcommerce.dapr.api": "StartDebugging",
+        "bcommerce.commonservice.api": "StartDebugging",
+        "bcommerce.masterservice.api": "StartDebugging",
+        "bcommerce.airlineservice.api": "StartDebugging",
+        //"dapr_redis_stack": "StartWithoutDebugging",
+        //"dapr_redis_stack_server": "StartWithoutDebugging",
+        "dapr_zipkin": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "postgres": "StartWithoutDebugging",
+        "prometheus": "StartWithoutDebugging",
+        "loki": "StartWithoutDebugging",
+        "promtail": "StartWithoutDebugging",
+        "grafana": "StartWithoutDebugging",
+        "keycloak": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging"
+      }
+    }
+  }
+}
+
+
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "composeLaunchAction": "LaunchBrowser",
+      "composeLaunchServiceName": "blazor-client",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "basket-api": "StartDebugging",
+        "basket-api-dapr": "StartWithoutDebugging",
+        "blazor-client": "StartDebugging",
+        "catalog-api": "StartDebugging",
+        "catalog-api-dapr": "StartWithoutDebugging",
+        "dapr-placement": "StartWithoutDebugging",
+        "identity-api": "StartDebugging",
+        "identity-api-dapr": "StartWithoutDebugging",
+        "ordering-api": "StartDebugging",
+        "ordering-api-dapr": "StartWithoutDebugging",
+        "payment-api": "StartDebugging",
+        "payment-api-dapr": "StartWithoutDebugging",
+        "rabbitmq": "StartWithoutDebugging",
+        "redis": "StartWithoutDebugging",
+        "seq": "StartWithoutDebugging",
+        "sqldata": "StartWithoutDebugging",
+        "webshoppingagg": "StartDebugging",
+        "webshoppingagg-dapr": "StartWithoutDebugging",
+        "webshoppingapigw": "StartWithoutDebugging",
+        "webshoppingapigw-dapr": "StartWithoutDebugging",
+        "webstatus": "StartWithoutDebugging",
+        "zipkin": "StartWithoutDebugging"
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+﻿global using BCommerce.Shared.Common.Messages;
+global using BCommerce.Shared.Infrastructure;
+global using BCommerce.Shared.Orchestration;
+global using BCommerce.StateMachineWorkerService;
+global using BCommerce.StateMachineWorkerService.CustomState;
+global using BCommerce.StateMachineWorkerService.Data;
+global using MassTransit;
+global using MassTransit.EntityFrameworkCoreIntegration;
+global using Microsoft.EntityFrameworkCore;
+global using Microsoft.EntityFrameworkCore.Metadata.Builders;
+global using Microsoft.EntityFrameworkCore.Metadata.Internal;
+global using System.ComponentModel.DataAnnotations.Schema;
+global using System.Reflection;
+global using System.Text;
